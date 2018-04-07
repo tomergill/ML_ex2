@@ -34,9 +34,10 @@ def train(W, b, dataset, epochs=1, lr=0.1):
     for i in range(epochs):
         start = time()
         accuracy = 0.0
+        np.random.shuffle(dataset)
         for x, y in dataset:
             probs = softmax(W*x+b)  # prediction output
-            accuracy += (np.argmax(probs) + 1 == y)  # accuracy for hyper parameter optimizing
+            accuracy += ((np.argmax(probs) + 1) == y)  # accuracy for hyper parameter optimizing
 
             y = int(y-1)
             # gradients
@@ -58,14 +59,13 @@ def train(W, b, dataset, epochs=1, lr=0.1):
 
 def main(classes):
     size_of_input = 1
-    learning_rate = 0.01
 
     # get data and weights
     examples = generate_dataset(classes)
     weights = np.zeros((len(classes), size_of_input))
     bias = np.zeros((len(classes), 1))
 
-    weights, bias = train(weights, bias, examples, lr=0.01)
+    weights, bias = train(weights, bias, examples, lr=0.0001, epochs=5)
 
     print "###############################################################"
     print "###############################################################"
