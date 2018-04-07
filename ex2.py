@@ -29,6 +29,12 @@ def softmax(x):
     return exps / np.sum(exps)
 
 
+def f(x, a):
+    mu = 2*a
+    sigma_square=1
+    return np.exp(-np.square(x-mu)/(2*sigma_square))/(sigma_square*np.sqrt(2*np.pi))
+
+
 def train(W, b, dataset, epochs=1, lr=0.1):
     print "Startin training..."
     for i in range(epochs):
@@ -47,14 +53,11 @@ def train(W, b, dataset, epochs=1, lr=0.1):
             gb[y] -= 1
 
             # update as SGD
-            W += lr * gW
-            b += lr * gb
+            W -= lr * gW
+            b -= lr * gb
         print "epoch #{} ended in {} seconds with {}% accuracy".format(i+1, time()-start, accuracy / dataset.shape[0]
                                                                        * 100)
     return W, b
-
-
-
 
 
 def main(classes):
@@ -65,7 +68,7 @@ def main(classes):
     weights = np.zeros((len(classes), size_of_input))
     bias = np.zeros((len(classes), 1))
 
-    weights, bias = train(weights, bias, examples, lr=0.0001, epochs=5)
+    weights, bias = train(weights, bias, examples, lr=0.1, epochs=10)
 
     print "###############################################################"
     print "###############################################################"
@@ -73,8 +76,10 @@ def main(classes):
     # predict
     test = range(11)
     for x in test:
+        a = np.array(classes)
         probs = softmax(weights * x + bias)  # prediction output
-        print x, probs[0]
+        real_probs = f(x, a)
+        print x, probs[0], real_probs[0] / np.sum(real_probs)
 
 
 if __name__ == '__main__':
