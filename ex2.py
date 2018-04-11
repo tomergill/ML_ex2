@@ -8,6 +8,7 @@ Date:        06/04/18
 
 import numpy as np
 from time import time
+from matplotlib import pyplot
 
 
 def generate_examples(a, num_examples=1):
@@ -68,19 +69,30 @@ def main(classes):
     weights = np.zeros((len(classes), size_of_input))
     bias = np.zeros((len(classes), 1))
 
-    weights, bias = train(weights, bias, examples, lr=0.1, epochs=10)
-
-    print "###############################################################"
-    print "###############################################################"
+    weights, bias = train(weights, bias, examples, lr=0.1, epochs=30)
 
     # predict
     test = range(11)
+    probs = []
+    real = []
     for x in test:
         a = np.array(classes)
-        probs = softmax(weights * x + bias)  # prediction output
+        probs.append(softmax(weights * x + bias)[0])  # prediction output
         real_probs = f(x, a)
-        print x, probs[0], real_probs[0] / np.sum(real_probs)
+        # print x, probs[0], real_probs[0] / np.sum(real_probs)
+        real.append(real_probs[0] / np.sum(real_probs))
 
+    test, probs, real = np.array(test), np.array(probs), np.array(real)
+    learned = pyplot.plot(test, probs, "r", label="Learned Probability")
+    density = pyplot.plot(test, real, "b--", label="Density Probability")
+    pyplot.legend(("Learned Probability", "Density Probability"))
+    pyplot.axis([0, 10, 0, 1])
+    pyplot.xlabel("Point")
+    pyplot.ylabel("Probability")
+    pyplot.title("Learned P(Y=1|X) VS. Probability by Density")
+    pyplot.xticks(np.arange(0, 11))
+    pyplot.yticks(np.arange(0, 1.1, 0.1))
+    pyplot.show()
 
 if __name__ == '__main__':
     classes = [1, 2, 3]
