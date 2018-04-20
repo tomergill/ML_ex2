@@ -72,7 +72,7 @@ def main(classes):
     weights, bias = train(weights, bias, examples, lr=0.1, epochs=30)
 
     # predict
-    test = range(11)
+    test = np.linspace(0, 10, num=100)
     probs = []
     real = []
     for x in test:
